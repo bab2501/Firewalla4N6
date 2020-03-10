@@ -88,7 +88,7 @@ function htmlTwoTable($table) {
 		$temprow = $row;
 		$cellA = array_pop($temprow);
 		$cellB = array_pop($temprow);
-		if (rowLastCell($row) == "0" && is_null($cellB)) {continue;}
+		if (rowLastCell($row) == "0" && is_null(rowBeforeLastCell($row))) {continue;}
 		$output .= "<tr>";
 		foreach ($row as $rname => $rvalue) {
 			$output .= "<td>".$rvalue."</td>";
@@ -121,8 +121,8 @@ function htmlAlarmTable($table,$typeAlarm=false) {
 		$cellB = array_pop($temprowA); // one before last cell
 		$cellC = array_shift($temprowB); //first cell
 		$cellD = array_shift($temprowB); // second cell
-		if ($cellA == "0" && is_null($cellB)) {continue;}
-		if ($typeAlarm !== false && $cellD != $typeAlarm) {continue;}
+		if (rowLastCell($row) == "0" && is_null(rowBeforeLastCell($row))) {continue;}
+		if ($typeAlarm !== false && rowSecondCell($row) != $typeAlarm) {continue;}
 		$output .= "<tr>";
 		foreach ($row as $rname => $rvalue) {
 			$output .= "<td>".$rvalue."</td>";
