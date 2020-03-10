@@ -1,12 +1,5 @@
 <?php
 
-		//$temprowA = $row;
-		//$temprowB = $row;
-		//$cellA = array_pop($temprowA); //last cell
-		//$cellB = array_pop($temprowA); // one before last cell
-		//$cellC = array_shift($temprowB); //first cell
-		//$cellD = array_shift($temprowB); // second cell
-
 function json2array($url,$dosort=true) {
 	$json = file_get_contents('/tmp/dump.json', true);
 	$array = json_decode($json, true);
