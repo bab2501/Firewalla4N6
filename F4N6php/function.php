@@ -1,5 +1,12 @@
 <?php
 
+		//$temprowA = $row;
+		//$temprowB = $row;
+		//$cellA = array_pop($temprowA); //last cell
+		//$cellB = array_pop($temprowA); // one before last cell
+		//$cellC = array_shift($temprowB); //first cell
+		//$cellD = array_shift($temprowB); // second cell
+
 function json2array($url,$dosort=true) {
 	$json = file_get_contents('/tmp/dump.json', true);
 	$array = json_decode($json, true);
@@ -60,10 +67,6 @@ function htmlOneTable($table) {
 	foreach ($table as $rid => $row) {
 		if (!isset($row) || empty($row) || !is_string($row)) {continue;}
 		if (is_array($row)) { echo "error line 36"; }
-		//$temprow = $row;
-		//$cellA = array_pop($temprow);
-		//$cellB = array_pop($temprow);
-		//if ($cellA == "0" && is_null($cellB)) {continue;}
 		$output .= "<tr>";
 			$output .= "<th>".$rid."</th>";
 			$output .= "<td>".$row."</td>";
@@ -85,9 +88,6 @@ function htmlTwoTable($table) {
 	}
 	foreach ($table as $rid => $row) {
 		if (!isset($row) || empty($row) || !is_array($row)) {continue;}
-		$temprow = $row;
-		$cellA = array_pop($temprow);
-		$cellB = array_pop($temprow);
 		if (rowLastCell($row) == "0" && is_null(rowBeforeLastCell($row))) {continue;}
 		$output .= "<tr>";
 		foreach ($row as $rname => $rvalue) {
@@ -104,10 +104,7 @@ function htmlAlarmTable($table,$typeAlarm=false) {
 	foreach ($table as $rid => $row) {
 		$output .= "<tr>";
 		foreach ($row as $rname => $rvalue) {
-			$temprowB = $row;
-			$cellC = array_shift($temprowB); //first cell
-			$cellD = array_shift($temprowB); // second cell
-			if ($typeAlarm !== false && $cellD != $typeAlarm) {continue;}
+			if ($typeAlarm !== false && rowSecondCell($row) != $typeAlarm) {continue;}
 			$output .= "<th>".$rname."</th>";
 		}
 		$output .= "</tr>";
@@ -115,12 +112,6 @@ function htmlAlarmTable($table,$typeAlarm=false) {
 	}
 	foreach ($table as $rid => $row) {
 		if (!isset($row) || empty($row) || !is_array($row)) {continue;}
-		$temprowA = $row;
-		$temprowB = $row;
-		$cellA = array_pop($temprowA); //last cell
-		$cellB = array_pop($temprowA); // one before last cell
-		$cellC = array_shift($temprowB); //first cell
-		$cellD = array_shift($temprowB); // second cell
 		if (rowLastCell($row) == "0" && is_null(rowBeforeLastCell($row))) {continue;}
 		if ($typeAlarm !== false && rowSecondCell($row) != $typeAlarm) {continue;}
 		$output .= "<tr>";
@@ -136,10 +127,7 @@ function htmlAlarmTable($table,$typeAlarm=false) {
 
 function listAlarmType($table) {
 	foreach ($table as $rid => $row) {
-		if (!isset($row) || empty($row) || !is_array($row)) {continue;}
-		$cellC = array_shift($row); //first cell
-		$cellD = array_shift($row); // second cell
-		$output[] = $cellD;
+		$output[] = rowSecondCell($row);
 	}
 	return array_unique($output);
 }
