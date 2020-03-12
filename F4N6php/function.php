@@ -84,7 +84,7 @@ function htmlTwoTable($table) {
 		if (rowLastCell($row) == "0" && is_null(rowBeforeLastCell($row))) {continue;}
 		$output .= "<tr>";
 		foreach ($row as $rname => $rvalue) {
-			$output .= "<td>".$rvalue."</td>";
+			$output .= "<td title=\"".$rname."\">".$rvalue."</td>";
 		}
 		$output .= "</tr>";
 	}
@@ -109,7 +109,7 @@ function htmlAlarmTable($table,$typeAlarm=false) {
 		if ($typeAlarm !== false && rowSecondCell($row) != $typeAlarm) {continue;}
 		$output .= "<tr>";
 		foreach ($row as $rname => $rvalue) {
-			$output .= "<td>".$rvalue."</td>";
+			$output .= "<td title=\"".$rname."\">".$rvalue."</td>";;
 		}
 		$output .= "</tr>";
 	}
