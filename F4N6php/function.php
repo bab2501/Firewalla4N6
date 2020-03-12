@@ -103,24 +103,33 @@ function htmlTwoTable($table) {
 
 function htmlAlarmTable($table,$typeAlarm=false) {
 	$output = "<table>";
+	$keycol = array();
+	$keyrow = array();
+	
 	foreach ($table as $rid => $row) {
-		$output .= "<tr>";
 		if (!rowMatch($row,"type",$typeAlarm)) {continue;}
-		foreach ($row as $rname => $rvalue) {
-			$output .= "<th>".$rname."</th>";
-		}
-		$output .= "</tr>";
+		$keycol = array_merge($keycol,array_keys($row));
 		break;
 	}
+	foreach ($keycol as $rid => $rkey) {
+		$keyrow[$rkey] = array();
+	}
+	$keyreset = $keyrow; //backup empty array
+	var_dump($keyreset);
+	
 	foreach ($table as $rid => $row) {
 		if (!isset($row) || empty($row) || !is_array($row)) {continue;}
 		if (rowLastCell($row) == "0" && is_null(rowBeforeLastCell($row))) {continue;}
 		if (!rowMatch($row,"type",$typeAlarm)) {continue;}
-		$output .= "<tr>";
 		foreach ($row as $rname => $rvalue) {
+			$keyrow[$rname] = $rvalue;
+		}
+		$output .= "<tr>";
+		foreach ($keyrow as $rname => $rvalue) {
 			$output .= "<td title=\"".$rname."\">".$rvalue."</td>";;
 		}
 		$output .= "</tr>";
+		//$keyrow = $keyreset;
 	}
 	$output .= "</table>";
 	return $output;
