@@ -45,6 +45,15 @@ function rowBeforeLastCell($row) {
 	return $output;
 }
 
+function rowMatch($row,$key,$value=false) {
+	if (!isset($row) || empty($row) || !is_array($row)) {return false;}
+	if (!isset($row[$key])) {return false;} // key is not present in row.
+	if ($value==false) {return $row[$key];} // key is not present in row.
+	if ($row[$key]==$value) {return true;} // key is not present in row.
+	return false;
+}
+
+
 function getTable($sorted_array,$table_name) {
 	foreach ($sorted_array as $key => $value) {
 		$meta = explode(":", $key);
@@ -96,8 +105,8 @@ function htmlAlarmTable($table,$typeAlarm=false) {
 	$output = "<table>";
 	foreach ($table as $rid => $row) {
 		$output .= "<tr>";
+		if (!rowMatch($row,"type",$typeAlarm)) {continue;}
 		foreach ($row as $rname => $rvalue) {
-			if ($typeAlarm !== false && rowSecondCell($row) != $typeAlarm) {continue;}
 			$output .= "<th>".$rname."</th>";
 		}
 		$output .= "</tr>";
@@ -106,7 +115,7 @@ function htmlAlarmTable($table,$typeAlarm=false) {
 	foreach ($table as $rid => $row) {
 		if (!isset($row) || empty($row) || !is_array($row)) {continue;}
 		if (rowLastCell($row) == "0" && is_null(rowBeforeLastCell($row))) {continue;}
-		if ($typeAlarm !== false && rowSecondCell($row) != $typeAlarm) {continue;}
+		if (!rowMatch($row,"type",$typeAlarm)) {continue;}
 		$output .= "<tr>";
 		foreach ($row as $rname => $rvalue) {
 			$output .= "<td title=\"".$rname."\">".$rvalue."</td>";;
@@ -120,7 +129,7 @@ function htmlAlarmTable($table,$typeAlarm=false) {
 
 function listAlarmType($table) {
 	foreach ($table as $rid => $row) {
-		$output[] = rowSecondCell($row);
+		$output[] = rowMatch($row,"type",false);
 	}
 	return array_unique($output);
 }
@@ -133,6 +142,7 @@ function showTable($sorted_array,$table_name) {
 	switch ($table_name) {
 		case "_alarm":
 			$alarmTypes = listAlarmType($table);
+			var_dump($alarmTypes);
 			foreach ($alarmTypes as $raid => $alarmTypeName) {
 				$output .= "<h3>".$alarmTypeName."</h3>";
 				$output .= "<div>";
