@@ -7,9 +7,12 @@ $setting = array();
 $setting["method"] = "view";
 $setting["table"] = false;
 
+require_once("function.php"); //load 
+$sorted_array = json2array('/tmp/dump.json',true);
+
 if ($_SERVER['REQUEST_URI'] && $_SERVER['REQUEST_URI'] != "/" )  {
 	$ruri = explode("/", $_SERVER['REQUEST_URI']);
-	var_dump($ruri);
+	//var_dump($ruri);
 	//if (isset($ruri[1]))  )  {
 		$setting["method"] = $ruri[1];
 	//}
@@ -51,6 +54,7 @@ echo '<!DOCTYPE html>
 	<script src="/static/js/jquery-1.12.4.js"></script>
 	<script src="/static/js/jquery-ui.js"></script>
 	<script>
+		function tableSelectRadio() { $("#tableSelectRadio-'.$setting["table"].'").prop("checked", true); }
 		$( function() {
 			$( "#tablenames" ).accordion({
 				collapsible: true,
@@ -62,9 +66,12 @@ echo '<!DOCTYPE html>
 				heightStyle: "content",
 				active: false
 			});
+			tableSelectRadio();
 			$( ".tableSelect input" ).checkboxradio();
 			$(".tableSelect input[type=radio]").change(function(){ $(location).attr(\'href\',$(this).val() ); });
 		} );
+		
+		window.setTimeout( tableSelectRadio(), 2000 );
 	</script>
 	
 </head>
@@ -73,22 +80,29 @@ echo '<!DOCTYPE html>
 method = '.$setting["method"] . '
 table = '.$setting["table"] . '
 <div class="widget">
-  <fieldset class="tableSelect">
-    <legend>Select a Table: </legend>
-    <label for="radio-1">All</label>
-    <input type="radio" name="radio-1" id="radio-1" value="view/false">
-    <label for="radio-2">Alarm</label>
-    <input type="radio" name="radio-1" id="radio-2" value="view/_alarm">
-  </fieldset>
 ';
 
-require_once("function.php"); //load 
-$sorted_array = json2array('/tmp/dump.json',true);
+$tableSSelect = showDatabase($sorted_array);
+echo '
+<div id="tableSelect">
+	<fieldset class="tableSelect">
+		<legend>Select a Table: </legend>
+		<label for="tableSelectRadio-index">All</label>
+		<input type="radio" name="tableSelectRadio" id="tableSelectRadio-index" value="view/index">
+';
+	foreach ($tableSSelect as $tid => $table_name) {
+		echo '
+			<label for="tableSelectRadio-'.$table_name.'">'.$table_name.'</label>
+			<input type="radio" name="tableSelectRadio" id="tableSelectRadio-'.$table_name.'" value="view/'.$table_name.'">
+		';
+	}
+echo '</fieldset>';
+echo '</div>';
 
 switch ($setting["method"]) {
 	case "view":
 		switch ($setting["table"]) {
-			case false:			
+			case "index":			
 				$table_names = showDatabase($sorted_array);
 				echo '<div id="tablenames">';
 				foreach ($table_names as $tid => $table_name) {

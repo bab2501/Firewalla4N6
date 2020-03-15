@@ -55,6 +55,7 @@ function rowMatch($row,$key,$value=false) {
 
 
 function getTable($sorted_array,$table_name) {
+	$output = array();
 	foreach ($sorted_array as $key => $value) {
 		$meta = explode(":", $key);
 		if ($meta[0] == $table_name) {
