@@ -48,8 +48,8 @@ function rowBeforeLastCell($row) {
 function rowMatch($row,$key,$value=false) {
 	if (!isset($row) || empty($row) || !is_array($row)) {return false;}
 	if (!isset($row[$key])) {return false;} // key is not present in row.
-	if ($value==false) {return $row[$key];} // key is not present in row.
-	if ($row[$key]==$value) {return true;} // key is not present in row.
+	if ($value==false) {return $row[$key];} // value is not given
+	if ($row[$key]==$value) {return true;} // value match
 	return false;
 }
 
@@ -105,16 +105,20 @@ function htmlAlarmTable($table,$typeAlarm=false) {
 	$output = "<table>";
 	$keycol = array();
 	$keyrow = array();
+	$keyreset = array();
 	
 	foreach ($table as $rid => $row) {
 		if (!rowMatch($row,"type",$typeAlarm)) {continue;}
-		$keycol = array_merge($keycol,array_keys($row));
-		break;
+		$keycol = array_unique(array_merge($keycol,array_keys($row)));
+		//break;
 	}
+	$output .= "<tr>";
 	foreach ($keycol as $rid => $rkey) {
-		$keyrow[$rkey] = array();
+		$keyrow[$rkey] = "NULL";
+		$output .= "<th>".$rkey."</th>"; //table header
 	}
-	$keyreset = $keyrow; //backup empty array
+	$output .= "</tr>";
+	$keyreset = array_merge($keyrow); //backup empty array
 	
 	foreach ($table as $rid => $row) {
 		if (!isset($row) || empty($row) || !is_array($row)) {continue;}
@@ -125,12 +129,10 @@ function htmlAlarmTable($table,$typeAlarm=false) {
 		}
 		$output .= "<tr>";
 		foreach ($keyrow as $rname => $rvalue) {
-			//var_dump($rname, $rvalue); 
-			$output .= "<td title=\"".$rname."\">".$rvalue."</td>";;
+			$output .= "<td title=\"".$rname."\">".$rvalue."</td>";
 		}
 		$output .= "</tr>";
-		//unset($keyrow);
-		//$keyrow = $keyreset;
+		unset($keyrow);$keyrow = array();$keyrow = array_merge($keyreset);
 	}
 	$output .= "</table>";
 	return $output;
