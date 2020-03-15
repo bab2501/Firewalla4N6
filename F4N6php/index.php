@@ -43,12 +43,22 @@ echo '<!DOCTYPE html>
 				heightStyle: "content",
 				active: false
 			});
+			$( ".tableSelect input" ).checkboxradio();
+			$(".tableSelect input[type=radio]").change(function(){ $(location).attr(\'href\',$(this).val() ); });
 		} );
 	</script>
 	
 </head>
 <body>
 <h1>Firewalla4N6 - Database View</h1>
+<div class="widget">
+  <fieldset class="tableSelect">
+    <legend>Select a Table: </legend>
+    <label for="radio-1">All</label>
+    <input type="radio" name="radio-1" id="radio-1" value="index.php" checked="true">
+    <label for="radio-2">Alarm</label>
+    <input type="radio" name="radio-1" id="radio-2" value="alarm.php">
+  </fieldset>
 ';
 
 require_once("function.php"); //load 
