@@ -115,7 +115,6 @@ function htmlAlarmTable($table,$typeAlarm=false) {
 		$keyrow[$rkey] = array();
 	}
 	$keyreset = $keyrow; //backup empty array
-	var_dump($keyreset);
 	
 	foreach ($table as $rid => $row) {
 		if (!isset($row) || empty($row) || !is_array($row)) {continue;}
@@ -126,9 +125,11 @@ function htmlAlarmTable($table,$typeAlarm=false) {
 		}
 		$output .= "<tr>";
 		foreach ($keyrow as $rname => $rvalue) {
+			var_dump($rname, $rvalue); 
 			$output .= "<td title=\"".$rname."\">".$rvalue."</td>";;
 		}
 		$output .= "</tr>";
+		//unset($keyrow);
 		//$keyrow = $keyreset;
 	}
 	$output .= "</table>";
