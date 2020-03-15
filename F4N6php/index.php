@@ -3,6 +3,25 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+$setting = array();
+$setting["method"] = "view";
+$setting["table"] = false;
+
+if ($_SERVER['REQUEST_URI'] && $_SERVER['REQUEST_URI'] != "/" )  {
+	$ruri = explode("/", $_SERVER['REQUEST_URI']);
+	var_dump($ruri);
+	//if (isset($ruri[1]))  )  {
+		$setting["method"] = $ruri[1];
+	//}
+	//if (isset($ruri[2]) )  {
+		$setting["table"] = $ruri[2];
+	//}
+}
+
+if (isset($_GET["method"]) && !empty($_GET["method"]) )  {$setting["method"] = $_GET["method"];}
+if (isset($_GET["table"]) && !empty($_GET["table"]) )  {$setting["table"] = $_GET["table"];}
+
+
 
 echo '<!DOCTYPE html>
 
@@ -51,29 +70,49 @@ echo '<!DOCTYPE html>
 </head>
 <body>
 <h1>Firewalla4N6 - Database View</h1>
+method = '.$setting["method"] . '
+table = '.$setting["table"] . '
 <div class="widget">
   <fieldset class="tableSelect">
     <legend>Select a Table: </legend>
     <label for="radio-1">All</label>
-    <input type="radio" name="radio-1" id="radio-1" value="index.php" checked="true">
+    <input type="radio" name="radio-1" id="radio-1" value="view/false">
     <label for="radio-2">Alarm</label>
-    <input type="radio" name="radio-1" id="radio-2" value="alarm.php">
+    <input type="radio" name="radio-1" id="radio-2" value="view/_alarm">
   </fieldset>
 ';
 
 require_once("function.php"); //load 
 $sorted_array = json2array('/tmp/dump.json',true);
 
-$table_names = showDatabase($sorted_array);
-echo '<div id="tablenames">';
-foreach ($table_names as $tid => $table_name) {
-	echo "<h3>".$table_name."</h3>";
-	echo '<div id="table_'.$table_name.'">';
-	echo showTable($sorted_array,$table_name);
-	echo "</div>";
+switch ($setting["method"]) {
+	case "view":
+		switch ($setting["table"]) {
+			case false:			
+				$table_names = showDatabase($sorted_array);
+				echo '<div id="tablenames">';
+				foreach ($table_names as $tid => $table_name) {
+					echo "<h3>".$table_name."</h3>";
+					echo '<div id="table_'.$table_name.'">';
+					echo showTable($sorted_array,$table_name);
+					echo "</div>";
+				}
+				echo "</div>";
+			default:
+				//$table_names = showDatabase($sorted_array);
+				echo '<div id="tablenames">';
+				//foreach ($table_names as $tid => $table_name) {
+				$table_name = $setting["table"];
+					echo "<h3>".$table_name."</h3>";
+					echo '<div id="table_'.$table_name.'">';
+					echo showTable($sorted_array,$table_name);
+					echo "</div>";
+				//}
+				echo "</div>";
+		}				
+	default:
+		
 }
-echo "</div>";
-
 echo '
 </body>
 </html>';
