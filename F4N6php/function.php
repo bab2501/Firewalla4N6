@@ -79,24 +79,43 @@ function htmlOneTable($table) {
 	$output .= "</table>";
 	return $output;
 }
-function htmlTwoTable($table) {
+function htmlTwoTable($table,$horizontal=false) {
 	$output = "<table>";
+	$keycol = array();
+	$keyrow = array();
+	$keyreset = array();
+	
 	foreach ($table as $rid => $row) {
-		$output .= "<tr>";
-		foreach ($row as $rname => $rvalue) {
-			$output .= "<th>".$rname."</th>";
-		}
-		$output .= "</tr>";
-		break;
+		//if (!rowMatch($row,"type",$typeAlarm)) {continue;}
+		$keycol = array_unique(array_merge($keycol,array_keys($row)));
+		//break;
 	}
+	$output .= "<tr>";
+	foreach ($keycol as $rid => $rkey) {
+		$keyrow[$rkey] = "NULL";
+		if($horizontal) { continue; }
+		else {$output .= "<th>".$rkey."</th>";} //table header
+	}
+	if($horizontal) { $output .= "<th>A</th><th>B</th>"; }
+	$output .= "</tr>";
+	$keyreset = array_merge($keyrow); //backup empty array
+	
 	foreach ($table as $rid => $row) {
 		if (!isset($row) || empty($row) || !is_array($row)) {continue;}
 		if (rowLastCell($row) == "0" && is_null(rowBeforeLastCell($row))) {continue;}
-		$output .= "<tr>";
+		//if (!rowMatch($row,"type",$typeAlarm)) {continue;}
 		foreach ($row as $rname => $rvalue) {
-			$output .= "<td title=\"".$rname."\">".$rvalue."</td>";
+			$keyrow[$rname] = $rvalue;
 		}
-		$output .= "</tr>";
+		if(!$horizontal) { $output .= "<tr>"; }
+		foreach ($keyrow as $rname => $rvalue) {
+			if($horizontal) { $output .= "<tr>"; }
+			if($horizontal) { $output .= "<th>".$rname."</th>";; }
+			$output .= "<td title=\"".$rname."\">".$rvalue."</td>";
+			if($horizontal) { $output .= "</tr>"; }
+		}
+		if(!$horizontal) { $output .= "</tr>"; }
+		unset($keyrow);$keyrow = array();$keyrow = array_merge($keyreset);
 	}
 	$output .= "</table>";
 	return $output;
@@ -175,7 +194,7 @@ function showTable($sorted_array,$table_name) {
 			$output = htmlOneTable($table);
 		break;
 		case "alarm_active":
-			$output = htmlTwoTable($table);
+			$output = htmlTwoTable($table,true);
 		break;
 		case "alarm_archive":
 			$output = htmlTwoTable($table);
@@ -199,22 +218,25 @@ function showTable($sorted_array,$table_name) {
 			$output = htmlOneTable($table);
 		break;
 		case "categoryflow":
-			$output = htmlTwoTable($table);
+			$output = htmlTwoTable($table,true);
 		break;
 		case "clients":
-			$output = htmlTwoTable($table);
+			$output = htmlTwoTable($table,true);
 		break;
 		case "country":
-			$output = htmlTwoTable($table);
+			$output = htmlTwoTable($table,true);
 		break;
 		case "dhcp":
 			$output = htmlTwoTable($table);
 		break;
 		case "dns":
-			$output = htmlTwoTable($table);
+			$output = htmlTwoTable($table,true);
+		break;
+		case "dnsdmasq":
+			$output = htmlOneTable($table);
 		break;
 		case "dynamicCategoryDomain":
-			$output = htmlTwoTable($table);
+			$output = htmlTwoTable($table,true);
 		break;
 		case "ext.safeSearch.config":
 			$output = htmlOneTable($table);
@@ -259,13 +281,13 @@ function showTable($sorted_array,$table_name) {
 			$output = htmlOneTable($table);
 		break;
 		case "monitored_hosts":
-			$output = htmlTwoTable($table);
+			$output = htmlTwoTable($table,true);
 		break;
 		case "monitored_hosts6":
-			$output = htmlTwoTable($table);
+			$output = htmlTwoTable($table,true);
 		break;
 		case "neighbor":
-			$output = htmlTwoTable($table);
+			$output = htmlTwoTable($table,false);
 		break;
 		case "notice":
 			$output = htmlTwoTable($table);
@@ -277,13 +299,13 @@ function showTable($sorted_array,$table_name) {
 			$output = htmlTwoTable($table);
 		break;
 		case "policy_active":
-			$output = htmlTwoTable($table);
+			$output = htmlTwoTable($table,true);
 		break;
 		case "prod.branch":
 			$output = htmlOneTable($table);
 		break;
 		case "ratelimit":
-			$output = htmlTwoTable($table);
+			$output = htmlTwoTable($table,true);
 		break;
 		case "rdns":
 			$output = htmlTwoTable($table);
@@ -292,7 +314,7 @@ function showTable($sorted_array,$table_name) {
 			$output = htmlOneTable($table);
 		break;
 		case "software":
-			$output = htmlTwoTable($table);
+			$output = htmlTwoTable($table, true);
 		break;
 		case "srdns":
 			$output = htmlTwoTable($table);
@@ -319,7 +341,8 @@ function showTable($sorted_array,$table_name) {
 			$output = htmlOneTable($table);
 		break;
 		default:
-			$output = "";
+			$output = "default view";
+			$output .= htmlTwoTable($table);
 	}
 	return $output;
 }
