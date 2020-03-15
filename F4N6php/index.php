@@ -54,7 +54,6 @@ echo '<!DOCTYPE html>
 	<script src="/static/js/jquery-1.12.4.js"></script>
 	<script src="/static/js/jquery-ui.js"></script>
 	<script>
-		function tableSelectRadio() { $("#tableSelectRadio-'.$setting["table"].'").prop("checked", true); }
 		$( function() {
 			$( "#tablenames" ).accordion({
 				collapsible: true,
@@ -66,12 +65,13 @@ echo '<!DOCTYPE html>
 				heightStyle: "content",
 				active: false
 			});
-			tableSelectRadio();
+			$("#tableSelectRadio-'.$setting["table"].'").prop("checked", true);
 			$( ".tableSelect input" ).checkboxradio();
 			$(".tableSelect input[type=radio]").change(function(){ $(location).attr(\'href\',$(this).val() ); });
+			$("#mathodSelect-'.$setting["method"].'").prop("checked", true);
+			$( ".mathodSelect input" ).checkboxradio();
+			$(".mathodSelect input[type=radio]").change(function(){ $(location).attr(\'href\',$(this).val() ); });
 		} );
-		
-		window.setTimeout( tableSelectRadio(), 2000 );
 	</script>
 	
 </head>
@@ -81,6 +81,26 @@ method = '.$setting["method"] . '
 table = '.$setting["table"] . '
 <div class="widget">
 ';
+
+$methodList = array();
+$methodList[] = "view";
+
+echo '
+<div id="mathodSelect">
+	<fieldset class="mathodSelect">
+		<legend>Select a Method: </legend>
+		<label for="mathodSelect-index">index</label>
+		<input type="radio" name="mathodSelect" id="mathodSelect-index" value="index">
+';
+	foreach ($methodList as $methodId => $methodName) {
+		echo '
+			<label for="mathodSelect-'.$methodName.'">'.$methodName.'</label>
+			<input type="radio" name="mathodSelect" id="mathodSelect-'.$methodName.'" value="'.$methodName.'/index">
+		';
+	}
+echo '</fieldset>';
+echo '</div>';
+
 
 $tableSSelect = showDatabase($sorted_array);
 echo '
