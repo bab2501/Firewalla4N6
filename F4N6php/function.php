@@ -125,7 +125,7 @@ function htmlAlarmTable($table,$typeAlarm=false) {
 		}
 		$output .= "<tr>";
 		foreach ($keyrow as $rname => $rvalue) {
-			var_dump($rname, $rvalue); 
+			//var_dump($rname, $rvalue); 
 			$output .= "<td title=\"".$rname."\">".$rvalue."</td>";;
 		}
 		$output .= "</tr>";
@@ -152,7 +152,7 @@ function showTable($sorted_array,$table_name) {
 	switch ($table_name) {
 		case "_alarm":
 			$alarmTypes = listAlarmType($table);
-			var_dump($alarmTypes);
+			//var_dump($alarmTypes);
 			foreach ($alarmTypes as $raid => $alarmTypeName) {
 				$output .= "<h3>".$alarmTypeName."</h3>";
 				$output .= "<div>";
