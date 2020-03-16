@@ -53,6 +53,12 @@ function rowMatch($row,$key,$value=false) {
 	return false;
 }
 
+function humanReadableValue($input) {
+	//if(!is_numeric(floatval($input))) {return $input;}
+    //if(strtotime(date('d-m-Y H:i:s',floatval($input))) === (float)floatval($input)) { return date('d-m-Y H:i:s',floatval($input)); }
+    //else return $input;
+    return $input;
+}
 
 function getTable($sorted_array,$table_name) {
 	$output = array();
@@ -149,7 +155,7 @@ function htmlAlarmTable($table,$typeAlarm=false) {
 		}
 		$output .= "<tr>";
 		foreach ($keyrow as $rname => $rvalue) {
-			$output .= "<td title=\"".$rname."\">".$rvalue."</td>";
+			$output .= "<td title=\"".$rname."\">".humanReadableValue($rvalue)."</td>";
 		}
 		$output .= "</tr>";
 		unset($keyrow);$keyrow = array();$keyrow = array_merge($keyreset);
