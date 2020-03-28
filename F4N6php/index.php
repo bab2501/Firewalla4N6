@@ -2,13 +2,14 @@
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+require_once("function.php"); //load 
 
 $setting = array();
 $setting["method"] = "view";
 $setting["table"] = false;
 
-require_once("function.php"); //load 
-$sorted_array = json2array('/tmp/dump.json',true);
+$setting["dumplocation"] = '/tmp/';
+$setting["dumpfile"] = 'dump.json';
 
 if ($_SERVER['REQUEST_URI'] && $_SERVER['REQUEST_URI'] != "/" )  {
 	$ruri = explode("/", $_SERVER['REQUEST_URI']);
@@ -21,10 +22,26 @@ if ($_SERVER['REQUEST_URI'] && $_SERVER['REQUEST_URI'] != "/" )  {
 	//}
 }
 
+if (isset($_GET["dumpfile"]) && !empty($_GET["dumpfile"]) )  {$setting["dumpfile"] = $_GET["dumpfile"];} //insecure
 if (isset($_GET["method"]) && !empty($_GET["method"]) )  {$setting["method"] = $_GET["method"];}
 if (isset($_GET["table"]) && !empty($_GET["table"]) )  {$setting["table"] = $_GET["table"];}
 
+if(strpos($setting["dumpfile"], "/") !== false){
+    trigger_error("Error1");exit();
+}
+if(!file_exists($setting["dumplocation"].$setting["dumpfile"]) !== false){
+    trigger_error("Error2");
+	$sorted_array = array(array("empty")); //crachfix #lasyfix
+} 
+else {
+	$sorted_array = json2array($setting["dumplocation"].$setting["dumpfile"],true);
+}
 
+$dumpList = array(); //do not use space in name #lasyfix
+$dumpList["dump.json"] = "standardDump";
+$dumpList["20200223.json"] = "23feb2020";
+$dumpList["20200312.json"] = "12mrt2020";
+$dumpList["20200328.json"] = "28mrt2020";
 
 echo '<!DOCTYPE html>
 
@@ -71,6 +88,9 @@ echo '<!DOCTYPE html>
 			$("#mathodSelect-'.$setting["method"].'").prop("checked", true);
 			$( ".mathodSelect input" ).checkboxradio();
 			$(".mathodSelect input[type=radio]").change(function(){ $(location).attr(\'href\',$(this).val() ); });
+			$("#dumpSelect-'.$dumpList[$setting["dumpfile"]].'").prop("checked", true);
+			$( ".dumpSelect input" ).checkboxradio();
+			$(".dumpSelect input[type=radio]").change(function(){ $(location).attr(\'href\',$(this).val() ); });
 		} );
 	</script>
 	
@@ -79,8 +99,25 @@ echo '<!DOCTYPE html>
 <h1>Firewalla4N6 - Database View</h1>
 method = '.$setting["method"] . '
 table = '.$setting["table"] . '
+file = '.$setting["dumpfile"] . '
 <div class="widget">
 ';
+
+echo '
+<div id="dumpSelect">
+	<fieldset class="dumpSelect">
+		<legend>Select a Dump: </legend>
+		<!-- <label for="dumpSelect-index">index</label> -->
+		<!-- <input type="radio" name="dumpSelect" id="dumpSelect-index" value="index"> -->
+';
+	foreach ($dumpList as $dumpUrl => $dumpName) {
+		echo '
+			<label for="dumpSelect-'.$dumpName.'">'.$dumpName.'</label>
+			<input type="radio" name="dumpSelect" id="dumpSelect-'.$dumpName.'" value="view/index'.'/?dumpfile='.$dumpUrl.'">
+		';
+	}
+echo '</fieldset>';
+echo '</div>';
 
 $methodList = array();
 $methodList[] = "view";
@@ -108,12 +145,12 @@ echo '
 	<fieldset class="tableSelect">
 		<legend>Select a Table: </legend>
 		<label for="tableSelectRadio-index">All</label>
-		<input type="radio" name="tableSelectRadio" id="tableSelectRadio-index" value="view/index">
+		<input type="radio" name="tableSelectRadio" id="tableSelectRadio-index" value="view/index'.'/?dumpfile='.$setting["dumpfile"].'">
 ';
 	foreach ($tableSSelect as $tid => $table_name) {
 		echo '
 			<label for="tableSelectRadio-'.$table_name.'">'.$table_name.'</label>
-			<input type="radio" name="tableSelectRadio" id="tableSelectRadio-'.$table_name.'" value="view/'.$table_name.'">
+			<input type="radio" name="tableSelectRadio" id="tableSelectRadio-'.$table_name.'" value="view/'.$table_name.'/?dumpfile='.$setting["dumpfile"].'">
 		';
 	}
 echo '</fieldset>';
