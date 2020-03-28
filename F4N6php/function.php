@@ -1,7 +1,8 @@
 <?php
 
 function json2array($url,$dosort=true) {
-	$json = file_get_contents('/tmp/dump.json', true);
+	if(!isset($url)) {trigger_error("$url emt");}
+	$json = file_get_contents($url, true);
 	$array = json_decode($json, true);
 	if ($dosort) {
 		$output = $array[0];
